@@ -20,8 +20,8 @@ URL = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20wh
 
 def is_pickup_possible(model):
   r = requests.get(URL)
-  if r.status_code == 200 and r.json() is not None:
-    d = r.json()
+  d = r.json()
+  if r.status_code == 200 and d is not None:
     product_info = d['query']['results']['json']['body']['stores']['partsAvailability'][model]
     product_selection_enabled = product_info['storeSelectionEnabled']
     if product_selection_enabled == 'true':
