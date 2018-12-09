@@ -59,6 +59,5 @@ def main():
   print('sending mail is complete.')
   
   
-  
 if __name__ == '__main__':
   main()
