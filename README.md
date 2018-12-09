@@ -26,10 +26,10 @@
 
 이를 바탕으로 main 함수를 작성해보자. 다음은 INTERVAL 초 마다 MODEL 의 픽업 주문이 가능한지 확인하고, 만약 가능하다면 내게 email 을 보내고 종료되는 메인 함수이다.
 ```
-    def main():
-      while(is_pickup_possible(MODEL) == False):
-        time.sleep(INTERVAL)
-    	mail_me(MODEL)
+def main():
+  while(is_pickup_possible(MODEL) == False):
+    time.sleep(INTERVAL)
+  mail_me(MODEL)
 ```
 이제 각 함수의 내부를 채워보자.
 
@@ -51,22 +51,22 @@ yql?q=select ... 하는 요청이 제일 시간이 많이 걸린 것으로 보�
 
 파이썬 기본 제공 라이브러리 중 특정 url 로 요청을 보낼 수 있는 requests 라는 모듈이 있다. 바로 함수를 작성해보자. 
 ```
-    def is_pickup_possible(model):
-      r = requests.get(URL)
-      d = r.json()
-      if r.status_code == 200 and d is not None:
-        try:
-          product_info = d['query']['results']['json']['body']['stores']['partsAvailability'][model]
-          product_selection_enabled = product_info['storeSelectionEnabled']
-          if product_selection_enabled == 'true':
-            return True
-          else:
-            return False
-        except Exception as e:
-          print(e)
-          return False
+def is_pickup_possible(model):
+  r = requests.get(URL)
+  d = r.json()
+  if r.status_code == 200 and d is not None:
+    try:
+      product_info = d['query']['results']['json']['body']['stores']['partsAvailability'][model]
+      product_selection_enabled = product_info['storeSelectionEnabled']
+      if product_selection_enabled == 'true':
+        return True
       else:
         return False
+    except Exception as e:
+      print(e)
+      return False
+  else:
+    return False
 ```
 쿼리 결과를 살펴보니 storeSelectionEnabled 의 값이 true 이면 픽업 주문이 가능하고, false 라면 픽업 주문이 불가능한 것 같아서 조건문으로  해당 필드 값을 사용했다. 현재까지 예외는 없었다. 
 
@@ -78,96 +78,96 @@ yql?q=select ... 하는 요청이 제일 시간이 많이 걸린 것으로 보�
 
 원래 메일을 보내려면 SMTP 라는 메일을 보낼 수 있는 서버를 구축해야하는데, 복잡하기 때문에 그냥 구글의 SMTP 서버를 빌려 쓰도록 하자. 바로 함수를 작성해보면 다음과 같다. your_gmail_address 와 your_gmail_password 에는 각각 본인의 gmail 주소와 비밀번호를 넣어주어야 한다. 
 ```
-    def mail_me(model):
-      msg = EmailMessage()
-      msg.set_content('Order %s right now.'% model)
-      msg['Subject'] = 'Wake up! pickup %s ordering is possible now.' % model
-      msg['From'] = 'your_gmail_address'
-      msg['To'] = 'your_gmail_address'
-    
-      # connect to SMTP server
-      server = smtplib.SMTP('smtp.gmail.com', 587)
-      server.starttls()
-      server.login('your_gmail_address', 'your_gmail_password')
-    
-      # Send the message via our own SMTP server.
-      server.send_message(msg)
-      server.quit()
+def mail_me(model):
+  msg = EmailMessage()
+  msg.set_content('Order %s right now.'% model)
+  msg['Subject'] = 'Wake up! pickup %s ordering is possible now.' % model
+  msg['From'] = 'your_gmail_address'
+  msg['To'] = 'your_gmail_address'
+
+  # connect to SMTP server
+  server = smtplib.SMTP('smtp.gmail.com', 587)
+  server.starttls()
+  server.login('your_gmail_address', 'your_gmail_password')
+
+  # Send the message via our own SMTP server.
+  server.send_message(msg)
+  server.quit()
 ```
 ## Run program
 
 전체 코드는 다음과 같다. 깃헙 링크 ([https://github.com/wonkyunglee/apple_pickup_postman/blob/master/main.py](https://github.com/wonkyunglee/apple_pickup_postman/blob/master/main.py) ) 에서도 확인할 수 있다. 
 ```
-    import requests
-    from email.message import EmailMessage
-    import smtplib
-    import time
-    
-    # Before run this code, you've to make authentification of less secure apps available.
-    # Link : https://myaccount.google.com/u/1/lesssecureapps?pli=1
-    
-    # Global variables
-    # Check a pickup-availability every INTERVAL seconds.
-    INTERVAL = 10
-    
-    # Model name to consider.
-    MODEL = 'MU102KH_A' # ipad pro 3rd generation, 11-inch 256gb wifi + cellular model
-    
-    # Request url
-    # Reference : https://nuridol.net/stock_pad_kr.html
-    URL = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22https%3A%2F%2Fwww.apple.com%2Fkr%2Fshop%2Fretail%2Fpickup-message%3Fpl%3Dtrue%26searchNearby%3Dtrue%26store%3DR692%26parts.0%3DMTXP2KH%2FA%26parts.1%3DMTXR2KH%2FA%26parts.2%3DMTXU2KH%2FA%26parts.3%3DMTXW2KH%2FA%26parts.4%3DMTXN2KH%2FA%26parts.5%3DMTXQ2KH%2FA%26parts.6%3DMTXT2KH%2FA%26parts.7%3DMTXV2KH%2FA%26parts.8%3DMU0U2KH%2FA%26parts.9%3DMU172KH%2FA%26parts.10%3DMU1M2KH%2FA%26parts.11%3DMU222KH%2FA%26parts.12%3DMU0M2KH%2FA%26parts.13%3DMU102KH%2FA%26parts.14%3DMU1F2KH%2FA%26parts.15%3DMU1V2KH%2FA%26parts.16%3DMTEM2KH%2FA%26parts.17%3DMTFN2KH%2FA%26parts.18%3DMTFQ2KH%2FA%26parts.19%3DMTFT2KH%2FA%26parts.20%3DMTEL2KH%2FA%26parts.21%3DMTFL2KH%2FA%26parts.22%3DMTFP2KH%2FA%26parts.23%3DMTFR2KH%2FA%26parts.24%3DMTHP2KH%2FA%26parts.25%3DMTJ62KH%2FA%26parts.26%3DMTJJ2KH%2FA%26parts.27%3DMTJV2KH%2FA%26parts.28%3DMTHJ2KH%2FA%26parts.29%3DMTHV2KH%2FA%26parts.30%3DMTJD2KH%2FA%26parts.31%3DMTJP2KH%2FA%22&format=json'
-    
-    
-    def is_pickup_possible(model):
-      r = requests.get(URL)
-      d = r.json()
-      if r.status_code == 200 and d is not None:
-    		try:
-    	    product_info = d['query']['results']['json']['body']['stores']['partsAvailability'][model]
-    	    product_selection_enabled = product_info['storeSelectionEnabled']
-    	    if product_selection_enabled == 'true':
-    	      return True
-    	    else:
-    	      return False
-    		except Exception as e:
-    			print(e)
-    			return False
-    	else:
-        return False
-      
-      
-    def mail_me(model):
-      msg = EmailMessage()
-      msg.set_content('Order %s right now.'% model)
-      msg['Subject'] = 'Wake up! pickup %s ordering is possible now.' % model
-      msg['From'] = 'your_gmail_address'
-      msg['To'] = 'your_gmail_address'
-    
-      # connect to SMTP server
-      server = smtplib.SMTP('smtp.gmail.com', 587)
-      server.starttls()
-      server.login('your_gmail_address', 'your_gmail_password')
-    
-      # Send the message via our own SMTP server.
-      server.send_message(msg)
-      server.quit()
-      
-    
-    def main():
-      while(is_pickup_possible(MODEL) == False):
-        time.sleep(INTERVAL)
-      mail_me(MODEL)
-      print('sending mail is complete.')
-      
-      
-    if __name__ == '__main__':
-      main()
+import requests
+from email.message import EmailMessage
+import smtplib
+import time
+
+# Before run this code, you've to make authentification of less secure apps available.
+# Link : https://myaccount.google.com/u/1/lesssecureapps?pli=1
+
+# Global variables
+# Check a pickup-availability every INTERVAL seconds.
+INTERVAL = 10
+
+# Model name to consider.
+MODEL = 'MU102KH_A' # ipad pro 3rd generation, 11-inch 256gb wifi + cellular model
+
+# Request url
+# Reference : https://nuridol.net/stock_pad_kr.html
+URL = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22https%3A%2F%2Fwww.apple.com%2Fkr%2Fshop%2Fretail%2Fpickup-message%3Fpl%3Dtrue%26searchNearby%3Dtrue%26store%3DR692%26parts.0%3DMTXP2KH%2FA%26parts.1%3DMTXR2KH%2FA%26parts.2%3DMTXU2KH%2FA%26parts.3%3DMTXW2KH%2FA%26parts.4%3DMTXN2KH%2FA%26parts.5%3DMTXQ2KH%2FA%26parts.6%3DMTXT2KH%2FA%26parts.7%3DMTXV2KH%2FA%26parts.8%3DMU0U2KH%2FA%26parts.9%3DMU172KH%2FA%26parts.10%3DMU1M2KH%2FA%26parts.11%3DMU222KH%2FA%26parts.12%3DMU0M2KH%2FA%26parts.13%3DMU102KH%2FA%26parts.14%3DMU1F2KH%2FA%26parts.15%3DMU1V2KH%2FA%26parts.16%3DMTEM2KH%2FA%26parts.17%3DMTFN2KH%2FA%26parts.18%3DMTFQ2KH%2FA%26parts.19%3DMTFT2KH%2FA%26parts.20%3DMTEL2KH%2FA%26parts.21%3DMTFL2KH%2FA%26parts.22%3DMTFP2KH%2FA%26parts.23%3DMTFR2KH%2FA%26parts.24%3DMTHP2KH%2FA%26parts.25%3DMTJ62KH%2FA%26parts.26%3DMTJJ2KH%2FA%26parts.27%3DMTJV2KH%2FA%26parts.28%3DMTHJ2KH%2FA%26parts.29%3DMTHV2KH%2FA%26parts.30%3DMTJD2KH%2FA%26parts.31%3DMTJP2KH%2FA%22&format=json'
+
+
+def is_pickup_possible(model):
+  r = requests.get(URL)
+  d = r.json()
+  if r.status_code == 200 and d is not None:
+  try:
+     product_info = d['query']['results']['json']['body']['stores']['partsAvailability'][model]
+     product_selection_enabled = product_info['storeSelectionEnabled']
+     if product_selection_enabled == 'true':
+       return True
+     else:
+       return False
+  except Exception as e:
+   print(e)
+   return False
+ else:
+    return False
+
+
+def mail_me(model):
+  msg = EmailMessage()
+  msg.set_content('Order %s right now.'% model)
+  msg['Subject'] = 'Wake up! pickup %s ordering is possible now.' % model
+  msg['From'] = 'your_gmail_address'
+  msg['To'] = 'your_gmail_address'
+
+  # connect to SMTP server
+  server = smtplib.SMTP('smtp.gmail.com', 587)
+  server.starttls()
+  server.login('your_gmail_address', 'your_gmail_password')
+
+  # Send the message via our own SMTP server.
+  server.send_message(msg)
+  server.quit()
+
+
+def main():
+  while(is_pickup_possible(MODEL) == False):
+    time.sleep(INTERVAL)
+  mail_me(MODEL)
+  print('sending mail is complete.')
+
+
+if __name__ == '__main__':
+  main()
 ```
 그리고 모델 명은 하단에 첨부 할테니, 필요한 분들은 모델명을 바꿔서 사용하시길 바란다.  필자는 11형 iPad Pro Wi-Fi + Cellular 256GB - 스페이스 그레이 모델을 바탕으로 코드를 작성하였다. 
 
 프로그램을 실행시키려면 python 이 설치되어 있어야 한다. python 이 실행 가능한 shell 에 다음과 같이 입력하여 프로그램을 실행시킬 수 있다. 
 ```
-    python main.py
+python main.py
 ```
 ## 마치며
 
