@@ -22,11 +22,15 @@ def is_pickup_possible(model):
   r = requests.get(URL)
   d = r.json()
   if r.status_code == 200 and d is not None:
-    product_info = d['query']['results']['json']['body']['stores']['partsAvailability'][model]
-    product_selection_enabled = product_info['storeSelectionEnabled']
-    if product_selection_enabled == 'true':
-      return True
-    else:
+    try:
+      product_info = d['query']['results']['json']['body']['stores']['partsAvailability'][model]
+      product_selection_enabled = product_info['storeSelectionEnabled']
+      if product_selection_enabled == 'true':
+        return True
+      else:
+        return False
+    except Exception as e:
+      print(e)
       return False
   else:
     return False
