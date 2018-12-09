@@ -25,7 +25,7 @@
 2. 어떤 조건이 만족되면 내게 이메일을 보내주는 모듈
 
 이를 바탕으로 main 함수를 작성해보자. 다음은 INTERVAL 초 마다 MODEL 의 픽업 주문이 가능한지 확인하고, 만약 가능하다면 내게 email 을 보내고 종료되는 메인 함수이다.
-```
+```python
 def main():
   while(is_pickup_possible(MODEL) == False):
     time.sleep(INTERVAL)
@@ -50,7 +50,7 @@ yql?q=select ... 하는 요청이 제일 시간이 많이 걸린 것으로 보�
 쿼리문이 엄청 길다. 대충 살펴보니 yahoo 에서 제공하는 yql api 를 사용하고 있다. YQL 은 yahoo query language 의 약자로, 특정 url 에다가 마치 DB select 문을 날리듯 쿼리를 날려서 데이터를 가져올 수 있는 api 인 것 같다. 포멧은 json 형태로 가져오게 된다. 그리고 R692 는 매장 이름, MU1F2KH_A 등은 제품명인 것 같다. 우리도 이 쿼리문을 사용하도록 하자.
 
 파이썬 기본 제공 라이브러리 중 특정 url 로 요청을 보낼 수 있는 requests 라는 모듈이 있다. 바로 함수를 작성해보자. 
-```
+```python
 def is_pickup_possible(model):
   r = requests.get(URL)
   d = r.json()
@@ -77,7 +77,7 @@ def is_pickup_possible(model):
 - [https://myaccount.google.com/u/1/lesssecureapps?pli=1](https://myaccount.google.com/u/1/lesssecureapps?pli=1)
 
 원래 메일을 보내려면 SMTP 라는 메일을 보낼 수 있는 서버를 구축해야하는데, 복잡하기 때문에 그냥 구글의 SMTP 서버를 빌려 쓰도록 하자. 바로 함수를 작성해보면 다음과 같다. your_gmail_address 와 your_gmail_password 에는 각각 본인의 gmail 주소와 비밀번호를 넣어주어야 한다. 
-```
+```python
 def mail_me(model):
   msg = EmailMessage()
   msg.set_content('Order %s right now.'% model)
@@ -97,7 +97,7 @@ def mail_me(model):
 ## Run program
 
 전체 코드는 다음과 같다. 깃헙 링크 ([https://github.com/wonkyunglee/apple_pickup_postman/blob/master/main.py](https://github.com/wonkyunglee/apple_pickup_postman/blob/master/main.py) ) 에서도 확인할 수 있다. 
-```
+```python
 import requests
 from email.message import EmailMessage
 import smtplib
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 그리고 모델 명은 하단에 첨부 할테니, 필요한 분들은 모델명을 바꿔서 사용하시길 바란다.  필자는 11형 iPad Pro Wi-Fi + Cellular 256GB - 스페이스 그레이 모델을 바탕으로 코드를 작성하였다. 
 
 프로그램을 실행시키려면 python 이 설치되어 있어야 한다. python 이 실행 가능한 shell 에 다음과 같이 입력하여 프로그램을 실행시킬 수 있다. 
-```
+```shell
 python main.py
 ```
 ## 마치며
