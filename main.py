@@ -24,7 +24,7 @@ def is_pickup_possible(model):
     d = r.json()
     product_info = d['query']['results']['json']['body']['stores']['partsAvailability'][model]
     product_selection_enabled = ipad_info['storeSelectionEnabled']
-    if product_selection_enabled:
+    if product_selection_enabled == 'true':
       return True
     else:
       return False
