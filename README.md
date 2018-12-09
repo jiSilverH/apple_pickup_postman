@@ -37,11 +37,11 @@
 
 첫 번째 함수에서 쓰일 데이터를 얻기 위해 nuridol 사이트를 참고해보자. 웹 개발은 잘 못하지만 어디서 본건 좀 있어서 웹 페이지가 어디로 어떤 요청을 보내는지 뜯어볼 줄은 안다. [https://nuridol.net/stock_pad_kr.html](https://nuridol.net/stock_pad_kr.html) 에 접속하여 개발자도구로 들어가고, network 탭을 눌러보자. 그리고 새로고침을 해보자. 
 
-![](figures/Untitled-d7f5b998-7824-496f-9ad5-21ea1ae67db4.png)
+![](Untitled-d7f5b998-7824-496f-9ad5-21ea1ae67db4.png)
 
 yql?q=select ... 하는 요청이 제일 시간이 많이 걸린 것으로 보아 아마도 각 제품의 매장 재고를 가져오는 요청인 것 같다. 우리의 예상이 맞는지 확인 해보기 위해 더블클릭을 하여 요청 결과를 보자.
 
-![](figures/Untitled-1bad1147-61e7-4739-a1be-5876c8ed2883.png)
+![](Untitled-1bad1147-61e7-4739-a1be-5876c8ed2883.png)
 
 맞는 것 같다. 이 사이트는 어디론가 yql query 를 날려서 받아온 정보를 렌더링 해주고 있는 것이다. 다음은 yql query 문을 복사해온 것이다. 
 
