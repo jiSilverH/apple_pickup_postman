@@ -51,13 +51,14 @@ def mail_me(model):
   server.send_message(msg)
   server.quit()
   
+
+def main():
+  while(is_pickup_possible(MODEL) == False):
+    time.sleep(INTERVAL)
+  mail_me(MODEL)
+  print('sending mail is complete.')
+  
+  
   
 if __name__ == '__main__':
-  does_send_pickup_mail = False
-  while(does_send_pickup_mail == False):
-    if is_pickup_possible(MODEL):
-      mail_me(MODEL)
-      does_send_pickup_mail = True
-      print('sending mail is complete.')
-    time.sleep(INTERVAL)
-
+  main()
