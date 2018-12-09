@@ -23,7 +23,7 @@ def is_pickup_possible(model):
   if r.status_code == 200 and r.json() is not None:
     d = r.json()
     product_info = d['query']['results']['json']['body']['stores']['partsAvailability'][model]
-    product_selection_enabled = ipad_info['storeSelectionEnabled']
+    product_selection_enabled = product_info['storeSelectionEnabled']
     if product_selection_enabled == 'true':
       return True
     else:
